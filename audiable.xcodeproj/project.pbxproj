@@ -7,21 +7,33 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
+		E63A14E61E5AF93D001E91FC /* MainNavigationViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = E63A14E51E5AF93D001E91FC /* MainNavigationViewController.swift */; };
 		E65EADF31E59C4660038E0A5 /* AppDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = E65EADF21E59C4660038E0A5 /* AppDelegate.swift */; };
-		E65EADF51E59C4660038E0A5 /* ViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = E65EADF41E59C4660038E0A5 /* ViewController.swift */; };
+		E65EADF51E59C4660038E0A5 /* LoginViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = E65EADF41E59C4660038E0A5 /* LoginViewController.swift */; };
 		E65EADF81E59C4660038E0A5 /* Main.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = E65EADF61E59C4660038E0A5 /* Main.storyboard */; };
 		E65EADFA1E59C4660038E0A5 /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = E65EADF91E59C4660038E0A5 /* Assets.xcassets */; };
 		E65EADFD1E59C4660038E0A5 /* LaunchScreen.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = E65EADFB1E59C4660038E0A5 /* LaunchScreen.storyboard */; };
+		E65EAE071E59CCD60038E0A5 /* PageCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = E65EAE061E59CCD60038E0A5 /* PageCell.swift */; };
+		E65EAE091E59D40C0038E0A5 /* PageModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = E65EAE081E59D40C0038E0A5 /* PageModel.swift */; };
+		E65EAE0B1E5A319E0038E0A5 /* LoginCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = E65EAE0A1E5A319D0038E0A5 /* LoginCell.swift */; };
+		E6CD11661E5B0A9000528906 /* HomeController.swift in Sources */ = {isa = PBXBuildFile; fileRef = E6CD11651E5B0A9000528906 /* HomeController.swift */; };
+		E6CD11681E5B0E8F00528906 /* UserDefaults.swift in Sources */ = {isa = PBXBuildFile; fileRef = E6CD11671E5B0E8F00528906 /* UserDefaults.swift */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
+		E63A14E51E5AF93D001E91FC /* MainNavigationViewController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = MainNavigationViewController.swift; sourceTree = "<group>"; };
 		E65EADEF1E59C4660038E0A5 /* audiable.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = audiable.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		E65EADF21E59C4660038E0A5 /* AppDelegate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppDelegate.swift; sourceTree = "<group>"; };
-		E65EADF41E59C4660038E0A5 /* ViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ViewController.swift; sourceTree = "<group>"; };
+		E65EADF41E59C4660038E0A5 /* LoginViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LoginViewController.swift; sourceTree = "<group>"; };
 		E65EADF71E59C4660038E0A5 /* Base */ = {isa = PBXFileReference; lastKnownFileType = file.storyboard; name = Base; path = Base.lproj/Main.storyboard; sourceTree = "<group>"; };
 		E65EADF91E59C4660038E0A5 /* Assets.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = Assets.xcassets; sourceTree = "<group>"; };
 		E65EADFC1E59C4660038E0A5 /* Base */ = {isa = PBXFileReference; lastKnownFileType = file.storyboard; name = Base; path = Base.lproj/LaunchScreen.storyboard; sourceTree = "<group>"; };
 		E65EADFE1E59C4660038E0A5 /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
+		E65EAE061E59CCD60038E0A5 /* PageCell.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = PageCell.swift; sourceTree = "<group>"; };
+		E65EAE081E59D40C0038E0A5 /* PageModel.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = PageModel.swift; sourceTree = "<group>"; };
+		E65EAE0A1E5A319D0038E0A5 /* LoginCell.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = LoginCell.swift; sourceTree = "<group>"; };
+		E6CD11651E5B0A9000528906 /* HomeController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = HomeController.swift; sourceTree = "<group>"; };
+		E6CD11671E5B0E8F00528906 /* UserDefaults.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = UserDefaults.swift; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -54,12 +66,18 @@
 		E65EADF11E59C4660038E0A5 /* audiable */ = {
 			isa = PBXGroup;
 			children = (
+				E63A14E51E5AF93D001E91FC /* MainNavigationViewController.swift */,
+				E65EAE061E59CCD60038E0A5 /* PageCell.swift */,
+				E65EAE0A1E5A319D0038E0A5 /* LoginCell.swift */,
 				E65EADF21E59C4660038E0A5 /* AppDelegate.swift */,
-				E65EADF41E59C4660038E0A5 /* ViewController.swift */,
+				E65EADF41E59C4660038E0A5 /* LoginViewController.swift */,
 				E65EADF61E59C4660038E0A5 /* Main.storyboard */,
 				E65EADF91E59C4660038E0A5 /* Assets.xcassets */,
 				E65EADFB1E59C4660038E0A5 /* LaunchScreen.storyboard */,
 				E65EADFE1E59C4660038E0A5 /* Info.plist */,
+				E65EAE081E59D40C0038E0A5 /* PageModel.swift */,
+				E6CD11651E5B0A9000528906 /* HomeController.swift */,
+				E6CD11671E5B0E8F00528906 /* UserDefaults.swift */,
 			);
 			path = audiable;
 			sourceTree = "<group>";
@@ -136,8 +154,14 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				E65EADF51E59C4660038E0A5 /* ViewController.swift in Sources */,
+				E65EAE091E59D40C0038E0A5 /* PageModel.swift in Sources */,
+				E63A14E61E5AF93D001E91FC /* MainNavigationViewController.swift in Sources */,
+				E6CD11661E5B0A9000528906 /* HomeController.swift in Sources */,
+				E65EADF51E59C4660038E0A5 /* LoginViewController.swift in Sources */,
+				E6CD11681E5B0E8F00528906 /* UserDefaults.swift in Sources */,
+				E65EAE0B1E5A319E0038E0A5 /* LoginCell.swift in Sources */,
 				E65EADF31E59C4660038E0A5 /* AppDelegate.swift in Sources */,
+				E65EAE071E59CCD60038E0A5 /* PageCell.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -297,6 +321,7 @@
 				E65EAE031E59C4660038E0A5 /* Release */,
 			);
 			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
 		};
 /* End XCConfigurationList section */
 	};
