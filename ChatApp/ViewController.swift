@@ -7,19 +7,42 @@
 //
 
 import UIKit
+import Firebase
 
-class ViewController: UIViewController {
-
+class ViewController: UITableViewController {
+    
     override func viewDidLoad() {
         super.viewDidLoad()
-        // Do any additional setup after loading the view, typically from a nib.
+        if FIRAuth.auth()?.currentUser?.uid == nil {
+            firstLogIn()
+        }
+        navigationItem.leftBarButtonItem = UIBarButtonItem(title: "LogOut", style: .plain, target: self, action: #selector(handleLogOut))
+
     }
 
-    override func didReceiveMemoryWarning() {
-        super.didReceiveMemoryWarning()
-        // Dispose of any resources that can be recreated.
-    }
+    func firstLogIn () {
+        let controller  = LoginViewController()
 
+        present(controller, animated: false, completion: nil)
+        controller.loginRegisterSegmentedControl.selectedSegmentIndex = 0
+        controller.handleSegmentedControlChangedSelectedIndex()
+    }
+    
+    func handleLogOut () {
+        
+        do {
+            try FIRAuth.auth()?.signOut()
+        } catch let err {
+            print(err)
+        }
+        
+        let controller  = LoginViewController()
+        
+        present(controller, animated: true, completion: nil)
+        controller.loginRegisterSegmentedControl.selectedSegmentIndex = 0
+        controller.handleSegmentedControlChangedSelectedIndex()
+    }
+    
 
 }
 
