@@ -18,6 +18,7 @@
 		E66EB7291E86AC12009D0223 /* LaunchScreen.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = E66EB7271E86AC12009D0223 /* LaunchScreen.storyboard */; };
 		E66EB7311E86AD76009D0223 /* LoginViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = E66EB7301E86AD76009D0223 /* LoginViewController.swift */; };
 		E66EB7351E87CE22009D0223 /* GoogleService-Info.plist in Resources */ = {isa = PBXBuildFile; fileRef = E66EB7341E87CE22009D0223 /* GoogleService-Info.plist */; };
+		E6B295741E8E639D00DF16C0 /* LoginViewController+handler.swift in Sources */ = {isa = PBXBuildFile; fileRef = E6B295731E8E639D00DF16C0 /* LoginViewController+handler.swift */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
@@ -35,6 +36,7 @@
 		E66EB72A1E86AC12009D0223 /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
 		E66EB7301E86AD76009D0223 /* LoginViewController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = LoginViewController.swift; sourceTree = "<group>"; };
 		E66EB7341E87CE22009D0223 /* GoogleService-Info.plist */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.plist.xml; path = "GoogleService-Info.plist"; sourceTree = "<group>"; };
+		E6B295731E8E639D00DF16C0 /* LoginViewController+handler.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = "LoginViewController+handler.swift"; sourceTree = "<group>"; };
 		EA01D446E736DCA12755A974 /* Pods-ChatApp.release.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-ChatApp.release.xcconfig"; path = "Pods/Target Support Files/Pods-ChatApp/Pods-ChatApp.release.xcconfig"; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
@@ -100,6 +102,7 @@
 			isa = PBXGroup;
 			children = (
 				E66EB7301E86AD76009D0223 /* LoginViewController.swift */,
+				E6B295731E8E639D00DF16C0 /* LoginViewController+handler.swift */,
 				E66EB71D1E86AC12009D0223 /* MessageController.swift */,
 				E628E41E1E8D09CA004983CD /* NewMessageController.swift */,
 			);
@@ -252,6 +255,7 @@
 			buildActionMask = 2147483647;
 			files = (
 				E66EB7311E86AD76009D0223 /* LoginViewController.swift in Sources */,
+				E6B295741E8E639D00DF16C0 /* LoginViewController+handler.swift in Sources */,
 				E628E41F1E8D09CA004983CD /* NewMessageController.swift in Sources */,
 				E628E4221E8D09DC004983CD /* User.swift in Sources */,
 				E66EB7241E86AC12009D0223 /* ChatApp.xcdatamodeld in Sources */,

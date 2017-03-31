@@ -19,6 +19,12 @@ class MessageController: UITableViewController {
         
         
     }
+    
+    override func viewWillAppear(_ animated: Bool) {
+        super.viewWillAppear(animated)
+        checkIfUserILoggedIn()
+
+    }
 
     private func checkIfUserILoggedIn() {
         let uid = FIRAuth.auth()?.currentUser?.uid
@@ -26,13 +32,16 @@ class MessageController: UITableViewController {
             firstLogIn()
         } else {
             FIRDatabase.database().reference().child("users").child(uid!).observeSingleEvent(of: .value, with: { (snapshot) in
-              
                 if let dictionary = snapshot.value as? [String: AnyObject] {
                     self.navigationItem.title = dictionary["name"] as? String
                 }
             }, withCancel: nil)
             
         }
+    }
+    
+    func fetchUserName () {
+        
     }
     
     @objc private func handleNewMessage () {
