@@ -75,7 +75,6 @@ class NewMessageCell: UITableViewCell {
         view.layer.cornerRadius = 24
         view.layer.masksToBounds = true
         view.contentMode = .scaleAspectFill
-        view.image = UIImage(named: "na")
         view.translatesAutoresizingMaskIntoConstraints = false
         return view
     }()

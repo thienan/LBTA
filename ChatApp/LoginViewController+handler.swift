@@ -50,7 +50,7 @@ extension LoginViewController: UIImagePickerControllerDelegate, UINavigationCont
         
         if let selectedImage = selectedInageFromPicker {
             profileImageView.image = selectedImage
-            profileImageView.layer.cornerRadius = 50
+            profileImageView.layer.cornerRadius = 30
             profileImageView.layer.masksToBounds = true
         
         }
@@ -77,14 +77,17 @@ extension LoginViewController: UIImagePickerControllerDelegate, UINavigationCont
             return
         }
         if email.isEmpty {
-            presentAlertController(title: "Registration issue", message: "Name field can't be empty")
+            presentAlertController(title: "Login issue", message: "Name field can't be empty")
             return
         }
-        FIRAuth.auth()?.signIn(withEmail: email, password: password, completion: { (user, err) in
-            if err != nil {
-                print(err!)
+        FIRAuth.auth()?.signIn(withEmail: email, password: password, completion: { (user, error) in
+            if error != nil {
+                print(error!)
+                let errorMessage = self.FIRErrorHandler(error: error!)
+                self.presentAlertController(title: "Login issue", message: errorMessage)
                 return
             }
+            self.messageViewController?.fetchUserName()
             self.dismiss(animated: true, completion: nil)
             
         })
@@ -104,40 +107,18 @@ extension LoginViewController: UIImagePickerControllerDelegate, UINavigationCont
         
         FIRAuth.auth()?.createUser(withEmail: email, password: password, completion: { (user: FIRUser?, error) in
             if error != nil {
-                var errorMessage: String = "Unknown error"
-                if let errCode = FIRAuthErrorCode(rawValue: error!._code) {
-                    switch errCode {
-                    case .errorCodeInvalidEmail:
-                        //FIRAuthErrorCodeInvalidEmail - Indicates the email address is malformed.
-                        errorMessage = "The email address is badly formatted."
-                    case .errorCodeEmailAlreadyInUse:
-                        //FIRAuthErrorCodeEmailAlreadyInUse - Indicates the email used to attempt sign up already exists.
-                        //Call fetchProvidersForEmail to check which sign-in mechanisms the user used,
-                        //and prompt the user to sign in with one of those.
-                        errorMessage = "The email address already in use."
-                    case .errorCodeWeakPassword:
-                        //FIRAuthErrorCodeWeakPassword - Indicates an attempt to set a password that is
-                        //considered too weak. The NSLocalizedFailureReasonErrorKey field in the NSError.userInfo
-                        //dictionary object will contain more detailed explanation that can be shown to the user.
-                        errorMessage = "The password must be 6 characters long or more."
-                    default:
-                        //FIRAuthErrorCodeEmailAlreadyInUse - Indicates the email used to attempt sign up
-                        //already exists. Call fetchProvidersForEmail to check which sign-in mechanisms the user
-                        //used, and prompt the user to sign in with one of those.
-                        //FIRAuthErrorCodeOperationNotAllowed - Indicates that email and password accounts
-                        //are not enabled. Enable them in the Auth section of the Firebase console.
-                        errorMessage = "The mail and password accounts are not enabled. Enable them in the Auth section of the Firebase console."
-                    }
-                }
+                let errorMessage = self.FIRErrorHandler(error: error!)
                 self.presentAlertController(title: "Registration issue", message: errorMessage)
                 return
             }
             // successfully logged user
-            
             let imageName = NSUUID().uuidString
-            let storageRef = FIRStorage.storage().reference().child("\(imageName).png")
+            //let storageRef = FIRStorage.storage().reference().child("\(imageName).png")
+            let storageRef = FIRStorage.storage().reference().child("\(imageName).jpg")
             
-            if let uplodData = UIImagePNGRepresentation(self.profileImageView.image!) {
+            // uplaod image with compression using 10% of current quality
+            if let profileImage = self.profileImageView.image, let uplodData = UIImageJPEGRepresentation(profileImage, 0.1) {
+            //if let uplodData = UIImagePNGRepresentation(self.profileImageView.image!) {
                 storageRef.put(uplodData, metadata: nil, completion: { (metadata, err) in
                     if err != nil {
                         print(err!)
@@ -151,14 +132,40 @@ extension LoginViewController: UIImagePickerControllerDelegate, UINavigationCont
                 })
             }
             
-            
-
-            
         })
     }
-    
+
+    func FIRErrorHandler(error: Error) -> String {
+        if let errCode = FIRAuthErrorCode(rawValue: error._code) {
+            switch errCode {
+            case .errorCodeInvalidEmail:
+                //FIRAuthErrorCodeInvalidEmail - Indicates the email address is malformed.
+                return "The email address is badly formatted."
+            case .errorCodeEmailAlreadyInUse:
+                //FIRAuthErrorCodeEmailAlreadyInUse - Indicates the email used to attempt sign up already exists.
+                //Call fetchProvidersForEmail to check which sign-in mechanisms the user used,
+                //and prompt the user to sign in with one of those.
+                 return "The email address already in use."
+            case .errorCodeWeakPassword:
+                //FIRAuthErrorCodeWeakPassword - Indicates an attempt to set a password that is
+                //considered too weak. The NSLocalizedFailureReasonErrorKey field in the NSError.userInfo
+                //dictionary object will contain more detailed explanation that can be shown to the user.
+                return "The password must be 6 characters long or more."
+            case .errorCodeOperationNotAllowed:
+                //FIRAuthErrorCodeWeakPassword - Indicates an attempt to set a password that is
+                //considered too weak. The NSLocalizedFailureReasonErrorKey field in the NSError.userInfo
+                //dictionary object will contain more detailed explanation that can be shown to the user.
+                return "The mail and password accounts are not enabled. Enable them in the Auth section of the Firebase console."
+            default:
+                //FIRAuthErrorCodeOperationNotAllowed - Indicates that email and password accounts
+                //are not enabled. Enable them in the Auth section of the Firebase console.
+                return "Unknown error"
+            }
+        }
+        return "Unknown error"
+    }
+
     private func registerUserIntoDatabaseWithUID (uid: String, values: [String: AnyObject]) {
-        
         let ref = FIRDatabase.database().reference(fromURL: "https://chatapp-540d5.firebaseio.com/")
         let userRef = ref.child("users").child(uid)
         userRef.updateChildValues(values, withCompletionBlock: { (err, ref) in
@@ -166,10 +173,12 @@ extension LoginViewController: UIImagePickerControllerDelegate, UINavigationCont
                 print(err!)
                 return
             }
-            print("Saved user successfully into Firebase db")
+            
+            let user = User()
+            user.setValuesForKeys(values)
+            self.messageViewController?.setupNavBarWithUser(user: user)
             self.dismiss(animated: true, completion: nil)
         })
-    
     }
     
     private func presentAlertController(title: String, message: String) {
