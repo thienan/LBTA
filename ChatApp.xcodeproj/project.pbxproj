@@ -8,6 +8,7 @@
 
 /* Begin PBXBuildFile section */
 		192DAA9D4403139599A7C703 /* Pods_ChatApp.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = B41674D2B796057085DEA0B4 /* Pods_ChatApp.framework */; };
+		E623C2881E90E8D600E238A7 /* ChatLogController.swift in Sources */ = {isa = PBXBuildFile; fileRef = E623C2871E90E8D600E238A7 /* ChatLogController.swift */; };
 		E628E41F1E8D09CA004983CD /* NewMessageController.swift in Sources */ = {isa = PBXBuildFile; fileRef = E628E41E1E8D09CA004983CD /* NewMessageController.swift */; };
 		E628E4221E8D09DC004983CD /* User.swift in Sources */ = {isa = PBXBuildFile; fileRef = E628E4211E8D09DC004983CD /* User.swift */; };
 		E66EB71C1E86AC12009D0223 /* AppDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = E66EB71B1E86AC12009D0223 /* AppDelegate.swift */; };
@@ -25,6 +26,7 @@
 /* Begin PBXFileReference section */
 		B41674D2B796057085DEA0B4 /* Pods_ChatApp.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; includeInIndex = 0; path = Pods_ChatApp.framework; sourceTree = BUILT_PRODUCTS_DIR; };
 		D68C1161A29C080C7CF4385C /* Pods-ChatApp.debug.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-ChatApp.debug.xcconfig"; path = "Pods/Target Support Files/Pods-ChatApp/Pods-ChatApp.debug.xcconfig"; sourceTree = "<group>"; };
+		E623C2871E90E8D600E238A7 /* ChatLogController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = ChatLogController.swift; sourceTree = "<group>"; };
 		E628E41E1E8D09CA004983CD /* NewMessageController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = NewMessageController.swift; sourceTree = "<group>"; };
 		E628E4211E8D09DC004983CD /* User.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = User.swift; sourceTree = "<group>"; };
 		E66EB7181E86AC11009D0223 /* ChatApp.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = ChatApp.app; sourceTree = BUILT_PRODUCTS_DIR; };
@@ -108,6 +110,7 @@
 				E6B295731E8E639D00DF16C0 /* LoginViewController+handler.swift */,
 				E66EB71D1E86AC12009D0223 /* MessageController.swift */,
 				E628E41E1E8D09CA004983CD /* NewMessageController.swift */,
+				E623C2871E90E8D600E238A7 /* ChatLogController.swift */,
 			);
 			name = Controllers;
 			sourceTree = "<group>";
@@ -265,6 +268,7 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				E623C2881E90E8D600E238A7 /* ChatLogController.swift in Sources */,
 				E66EB7311E86AD76009D0223 /* LoginViewController.swift in Sources */,
 				E6B295741E8E639D00DF16C0 /* LoginViewController+handler.swift in Sources */,
 				E628E41F1E8D09CA004983CD /* NewMessageController.swift in Sources */,

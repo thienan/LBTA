@@ -42,6 +42,7 @@ class MessageController: UITableViewController {
     func setupNavBarWithUser (user: User) {
         let titleView = UIView()
         titleView.frame = CGRect(x: 0, y: 0, width: 100, height: 40)
+        titleView.addGestureRecognizer(UITapGestureRecognizer(target: self, action: #selector(handleNavTitleTapGsture)))
         
         let containerView = UIView()
         containerView.translatesAutoresizingMaskIntoConstraints = false
@@ -78,6 +79,12 @@ class MessageController: UITableViewController {
         containerView.centerYAnchor.constraint(equalTo: titleView.centerYAnchor).isActive = true
         
         navigationItem.titleView = titleView
+    }
+    
+    func handleNavTitleTapGsture() {
+        let layout = UICollectionViewFlowLayout()
+        let chatLogController = ChatLogController(collectionViewLayout: layout)
+        navigationController?.pushViewController(chatLogController, animated: true)
     }
     
     @objc private func handleNewMessage () {
