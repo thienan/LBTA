@@ -11,13 +11,50 @@ import Firebase
 
 class MessageController: UITableViewController {
     
+    let cellId = "cellId"
+    var messages = [Message]()
+    
     override func viewDidLoad() {
         super.viewDidLoad()
         checkIfUserILoggedIn()
-        navigationItem.leftBarButtonItem = UIBarButtonItem(image: UIImage(named:"logout-icon"), style: .plain, target: self, action: #selector(handleLogOut))
-        navigationItem.rightBarButtonItem = UIBarButtonItem(image: UIImage(named:"new_message_icon"), style: .plain, target: self, action: #selector(handleNewMessage))
+        navigationItem.leftBarButtonItem = UIBarButtonItem(image: UIImage(named:"logout-icon"),
+                                                           style: .plain, target: self,
+                                                           action: #selector(handleLogOut))
+        navigationItem.rightBarButtonItem = UIBarButtonItem(image: UIImage(named:"new_message_icon"),
+                                                            style: .plain, target: self,
+                                                            action: #selector(handleNewMessage))
+        tableView.register(NewMessageCell.self, forCellReuseIdentifier: cellId)
+        observMessages()
     }
 
+    func observMessages() {
+        FIRDatabase.database().reference().child("messages").observe(.childAdded, with: { (snapshot) in
+         if let dictionary = snapshot.value as? [String: AnyObject] {
+            let message = Message()
+            message.setValuesForKeys(dictionary)
+            self.messages.append(message)
+            DispatchQueue.main.async(execute: {
+                self.tableView.reloadData()
+            })
+            
+        }
+
+        }, withCancel: nil)
+    
+    }
+    
+    override func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
+        return messages.count
+    }
+    
+    override func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
+        let cell = tableView.dequeueReusableCell(withIdentifier: cellId, for: indexPath) as! NewMessageCell
+        let message = messages[indexPath.row]
+        cell.textLabel?.text = message.fromId
+        cell.detailTextLabel?.text = message.text
+        return cell
+    }
+    
     private func checkIfUserILoggedIn() {
         let uid = FIRAuth.auth()?.currentUser?.uid
         if uid == nil {
@@ -42,7 +79,6 @@ class MessageController: UITableViewController {
     func setupNavBarWithUser (user: User) {
         let titleView = UIView()
         titleView.frame = CGRect(x: 0, y: 0, width: 100, height: 40)
-        titleView.addGestureRecognizer(UITapGestureRecognizer(target: self, action: #selector(handleNavTitleTapGsture)))
         
         let containerView = UIView()
         containerView.translatesAutoresizingMaskIntoConstraints = false
@@ -81,14 +117,16 @@ class MessageController: UITableViewController {
         navigationItem.titleView = titleView
     }
     
-    func handleNavTitleTapGsture() {
+    func showChatLogControllerForUser(user: User) {
         let layout = UICollectionViewFlowLayout()
         let chatLogController = ChatLogController(collectionViewLayout: layout)
+        chatLogController.user = user
         navigationController?.pushViewController(chatLogController, animated: true)
     }
     
     @objc private func handleNewMessage () {
         let newMessageController = NewMessageController()
+        newMessageController.messagesController = self
         let navController = UINavigationController(rootViewController: newMessageController)
         present(navController, animated: true, completion: nil)
     }
