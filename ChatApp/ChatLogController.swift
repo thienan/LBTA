@@ -132,11 +132,40 @@ class ChatLogController: UICollectionViewController, UITextFieldDelegate, UIColl
     override func collectionView(_ collectionView: UICollectionView, cellForItemAt indexPath: IndexPath) -> UICollectionViewCell {
         let cell = collectionView.dequeueReusableCell(withReuseIdentifier: cellId, for: indexPath) as! ChatMessageCell
         
-        cell.textView.text = messages[indexPath.item].text
+        let message = messages[indexPath.item]
         
-        cell.bubbleWidthAnchor?.constant = estimatedFrameForText(text: messages[indexPath.item].text!).width + 32
+        cell.textView.text = message.text
+        
+        setupCell(cell: cell, message: message)
+
+        cell.bubbleWidthAnchor?.constant = estimatedFrameForText(text: message.text!).width + 32
         
         return cell
+    }
+    
+    private func setupCell (cell: ChatMessageCell, message: Message) {
+        
+        if let profileImageUrl = self.user?.profieImage {
+            cell.profileImageView.loadImagesUsingCacheWithUrlString(urlString: profileImageUrl)
+        }
+        
+        if message.fromId == FIRAuth.auth()?.currentUser?.uid {
+            cell.bubleView.backgroundColor = ChatMessageCell.blueColor
+            cell.textView.textColor = .white
+            cell.profileImageView.isHidden = true
+            
+            cell.bubbleRightAnchor?.isActive = true
+            cell.bubbleLeftAnchor?.isActive = false
+            
+        } else {
+            cell.bubleView.backgroundColor = ChatMessageCell.grayColor
+            cell.textView.textColor = .black
+            
+            cell.profileImageView.isHidden = false
+
+            cell.bubbleRightAnchor?.isActive = false
+            cell.bubbleLeftAnchor?.isActive = true
+        }
     }
     
     override func viewWillTransition(to size: CGSize, with coordinator: UIViewControllerTransitionCoordinator) {

@@ -54,11 +54,8 @@ class MessageController: UITableViewController {
                             return message1.timestamp!.intValue > message2.timestamp!.intValue
                         })
                     }
-                    
-                    DispatchQueue.main.async(execute: {
-                        self.tableView.reloadData()
-                    })
-                    
+                    self.timer?.invalidate()
+                    self.timer = Timer.scheduledTimer(timeInterval: 0.1, target: self, selector: #selector(self.handleReloadTable), userInfo: nil, repeats: false)
                 }
             }, withCancel: nil)
 
@@ -67,30 +64,13 @@ class MessageController: UITableViewController {
         }, withCancel: nil)
     }
     
-    func observMessages() {
-        FIRDatabase.database().reference().child("messages").observe(.childAdded, with: { (snapshot) in
-         if let dictionary = snapshot.value as? [String: AnyObject] {
-            let message = Message()
-            message.setValuesForKeys(dictionary)
-            self.messages.append(message)
-            
-            if let toId = message.toId {
-                self.messagesDictionary[toId] = message
-                self.messages = Array(self.messagesDictionary.values)
-                self.messages.sort(by: { (message1, message2) -> Bool in
-                    return message1.timestamp!.intValue > message2.timestamp!.intValue
-                })
-            }
-            
-            DispatchQueue.main.async(execute: {
-                self.tableView.reloadData()
-            })
-            
-        }
-
-        }, withCancel: nil)
-    
+    func handleReloadTable() {
+        DispatchQueue.main.async(execute: {
+            self.tableView.reloadData()
+        })
     }
+    
+    var timer: Timer?
     
     override func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
         return messages.count
