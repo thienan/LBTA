@@ -9,12 +9,47 @@
 import UIKit
 import Firebase
 
-class ChatLogController: UICollectionViewController, UITextFieldDelegate {
+class ChatLogController: UICollectionViewController, UITextFieldDelegate, UICollectionViewDelegateFlowLayout {
     
     var user: User? {
         didSet {
             navigationItem.title = user?.name
+            
+            observMessages()
         }
+    }
+    
+    var messages = [Message]()
+    
+    func observMessages() {
+        guard let uid = FIRAuth.auth()?.currentUser?.uid else {
+            return
+        }
+        let ref = FIRDatabase.database().reference().child("user-messages").child(uid)
+        ref.observe(.childAdded, with: { (snapshot) in
+            let messageId = snapshot.key
+            let messagesRef = FIRDatabase.database().reference().child("messages").child(messageId)
+            messagesRef.observeSingleEvent(of: .value, with: { (snapshot) in
+
+                guard let dictionary = snapshot.value as? [String: AnyObject] else {
+                    return
+                }
+              
+                let message = Message()
+                message.setValuesForKeys(dictionary)
+                
+                // append only relayted to User id messages
+                if message.chatPartnerId() == self.user?.id {
+                    self.messages.append(message)
+                    DispatchQueue.main.async(execute: {
+                        self.collectionView?.reloadData()
+                    })
+                }
+
+                
+            }, withCancel: nil)
+            
+        }, withCancel: nil)
     }
     
     let containerView : UIView = {
@@ -40,7 +75,6 @@ class ChatLogController: UICollectionViewController, UITextFieldDelegate {
     
     lazy var sendButton: UIButton = {
         let button = UIButton(type: .system)
-        //button.setTitle("Sent", for: UIControlState.normal)
         button.setImage(UIImage(named: "sent"), for: .normal)
         button.translatesAutoresizingMaskIntoConstraints = false
         button.addTarget(self, action: #selector(handleSend), for: .touchUpInside)
@@ -78,18 +112,35 @@ class ChatLogController: UICollectionViewController, UITextFieldDelegate {
     
     // MARK: - Layout
     
+    let cellId = "cellId"
+    
     override func viewDidLoad() {
         super.viewDidLoad()
-        
+        collectionView?.alwaysBounceVertical = true
         collectionView?.backgroundColor = .white
-        
+        collectionView?.register(ChatMessageCell.self, forCellWithReuseIdentifier: cellId)
         setupInputFildElements()
     }
     
-
+    override func collectionView(_ collectionView: UICollectionView, numberOfItemsInSection section: Int) -> Int {
+        return messages.count
+    }
+    
+    override func collectionView(_ collectionView: UICollectionView, cellForItemAt indexPath: IndexPath) -> UICollectionViewCell {
+        let cell = collectionView.dequeueReusableCell(withReuseIdentifier: cellId, for: indexPath) as! ChatMessageCell
+        
+        cell.textView.text = messages[indexPath.item].text
+        
+        return cell
+    }
+    
+    func collectionView(_ collectionView: UICollectionView, layout collectionViewLayout: UICollectionViewLayout, sizeForItemAt indexPath: IndexPath) -> CGSize {
+        return CGSize(width: view.frame.width, height: 80)
+    }
     
     func setupInputFildElements() {
         view.addSubview(containerView)
+        containerView.backgroundColor = .white
         
         containerView.leftAnchor.constraint(equalTo: view.leftAnchor).isActive = true
         containerView.bottomAnchor.constraint(equalTo: view.bottomAnchor).isActive = true

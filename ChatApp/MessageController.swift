@@ -37,7 +37,6 @@ class MessageController: UITableViewController {
         let ref = FIRDatabase.database().reference().child("user-messages").child(uid)
     
         ref.observe(.childAdded, with: { (snapshot) in
-            
             let messageId = snapshot.key
             
             let messageReference = FIRDatabase.database().reference().child("messages").child(messageId)
@@ -47,8 +46,9 @@ class MessageController: UITableViewController {
                     message.setValuesForKeys(dictionary)
                     self.messages.append(message)
                     
-                    if let toId = message.toId {
-                        self.messagesDictionary[toId] = message
+                    if let id = message.chatPartnerId() {
+                        
+                        self.messagesDictionary[id] = message
                         self.messages = Array(self.messagesDictionary.values)
                         self.messages.sort(by: { (message1, message2) -> Bool in
                             return message1.timestamp!.intValue > message2.timestamp!.intValue
@@ -105,7 +105,29 @@ class MessageController: UITableViewController {
         return cell
     }
     
-
+    override func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
+        
+        let message = messages[indexPath.row]
+        
+        guard let chatPartnerId = message.chatPartnerId() else {
+            return
+        }
+        
+        let ref = FIRDatabase.database().reference().child("users").child(chatPartnerId)
+        ref.observeSingleEvent(of: .value, with: { (snapshot) in
+            guard let dictionary = snapshot.value as? [String: AnyObject] else {
+                return
+            }
+            let user = User()
+            user.setValuesForKeys(dictionary)
+            user.id = chatPartnerId
+            self.showChatLogControllerForUser(user: user)
+            
+            
+        }, withCancel: nil)
+        
+        
+    }
     
     override func tableView(_ tableView: UITableView, heightForRowAt indexPath: IndexPath) -> CGFloat {
         return 64
