@@ -49,12 +49,44 @@ class ChatLogController: UICollectionViewController, UITextFieldDelegate {
     
     func handleSend() {
         let ref = FIRDatabase.database().reference().child("messages")
+        let toId = user!.id!
         let childRef = ref.childByAutoId()
         let fromId = FIRAuth.auth()!.currentUser!.uid
         let timestamp = NSDate().timeIntervalSince1970
-        let values = ["text": textInputField.text!, "toId" : user!.id!, "fromId": fromId, "timestamp": timestamp] as [String : Any]
-        childRef.updateChildValues(values)
+        let values = ["text": textInputField.text!, "toId" : toId,
+                      "fromId": fromId, "timestamp": timestamp] as [String : Any]
+        childRef.updateChildValues(values) { (error, ref) in
+            if error != nil {
+                print(error!)
+                return
+            }
+            
+            let userMessagesRef = FIRDatabase.database().reference().child("user-messages").child(fromId)
+            let messageId = childRef.key
+            userMessagesRef.updateChildValues([messageId: 1])
+            
+            let recipientMessageRef = FIRDatabase.database().reference().child("user-messages").child(toId)
+            recipientMessageRef.updateChildValues([messageId: 1])
+        }
+          
     }
+
+    func textFieldShouldReturn(_ textField: UITextField) -> Bool {
+        handleSend()
+        return true
+    }
+    
+    // MARK: - Layout
+    
+    override func viewDidLoad() {
+        super.viewDidLoad()
+        
+        collectionView?.backgroundColor = .white
+        
+        setupInputFildElements()
+    }
+    
+
     
     func setupInputFildElements() {
         view.addSubview(containerView)
@@ -85,19 +117,5 @@ class ChatLogController: UICollectionViewController, UITextFieldDelegate {
         textInputField.rightAnchor.constraint(equalTo: sendButton.leftAnchor).isActive = true
         
     }
-    
-    override func viewDidLoad() {
-        super.viewDidLoad()
-        
-        collectionView?.backgroundColor = .white
-        
-        setupInputFildElements()
-    }
-    
-    func textFieldShouldReturn(_ textField: UITextField) -> Bool {
-        handleSend()
-        return true
-    }
-    
     
 }

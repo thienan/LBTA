@@ -13,16 +13,9 @@ class UserCell: UITableViewCell {
     
     var message: Message? {
         didSet{
-            if let toId = message?.toId {
-                FIRDatabase.database().reference().child("users").child(toId).observeSingleEvent(of: .value, with: { (snapshot) in
-                    if let dictionary = snapshot.value as? [String: AnyObject] {
-                        let user =  User()
-                        user.setValuesForKeys(dictionary)
-                        self.textLabel?.text = user.name
-                        self.profileImageView.loadImagesUsingCacheWithUrlString(urlString: user.profieImage!)
-                    }
-                }, withCancel: nil)
-            }
+            
+            setupNameAndProfileImage()
+            
             detailTextLabel?.text = message?.text
             if let seconds = message?.timestamp!.doubleValue {
                 let timestamp = Date(timeIntervalSince1970: seconds)
@@ -34,6 +27,27 @@ class UserCell: UITableViewCell {
             }
         }
     
+    }
+    
+    private func setupNameAndProfileImage() {
+        var chatPartner: String?
+        
+        if message?.fromId == FIRAuth.auth()?.currentUser?.uid {
+            chatPartner = message?.toId
+        } else {
+            chatPartner = message?.fromId
+        }
+        
+        if let id = chatPartner {
+            FIRDatabase.database().reference().child("users").child(id).observeSingleEvent(of: .value, with: { (snapshot) in
+                if let dictionary = snapshot.value as? [String: AnyObject] {
+                    let user =  User()
+                    user.setValuesForKeys(dictionary)
+                    self.textLabel?.text = user.name
+                    self.profileImageView.loadImagesUsingCacheWithUrlString(urlString: user.profieImage!)
+                }
+            }, withCancel: nil)
+        }
     }
     
     var timeLabel: UILabel = {
