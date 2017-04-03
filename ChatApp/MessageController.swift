@@ -23,7 +23,7 @@ class MessageController: UITableViewController {
         navigationItem.rightBarButtonItem = UIBarButtonItem(image: UIImage(named:"new_message_icon"),
                                                             style: .plain, target: self,
                                                             action: #selector(handleNewMessage))
-        tableView.register(NewMessageCell.self, forCellReuseIdentifier: cellId)
+        tableView.register(UserCell.self, forCellReuseIdentifier: cellId)
         observMessages()
     }
 
@@ -33,6 +33,17 @@ class MessageController: UITableViewController {
             let message = Message()
             message.setValuesForKeys(dictionary)
             self.messages.append(message)
+            
+            if let toId = message.toId {
+                var messagesDictionary = [String: Message]()
+                messagesDictionary[toId] = message
+                self.messages = Array(messagesDictionary.values)
+                self.messages.sort(by: { (message1, message2) -> Bool in
+                    return message1.timestamp!.intValue > message2.timestamp!.intValue
+                })
+            }
+
+            
             DispatchQueue.main.async(execute: {
                 self.tableView.reloadData()
             })
@@ -48,11 +59,18 @@ class MessageController: UITableViewController {
     }
     
     override func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
-        let cell = tableView.dequeueReusableCell(withIdentifier: cellId, for: indexPath) as! NewMessageCell
+        let cell = tableView.dequeueReusableCell(withIdentifier: cellId, for: indexPath) as! UserCell
         let message = messages[indexPath.row]
-        cell.textLabel?.text = message.fromId
-        cell.detailTextLabel?.text = message.text
+
+        cell.message = message
+        
         return cell
+    }
+    
+
+    
+    override func tableView(_ tableView: UITableView, heightForRowAt indexPath: IndexPath) -> CGFloat {
+        return 64
     }
     
     private func checkIfUserILoggedIn() {
