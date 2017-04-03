@@ -94,7 +94,7 @@ class ChatLogController: UICollectionViewController, UITextFieldDelegate, UIColl
                 print(error!)
                 return
             }
-            
+            self.textInputField.text = nil
             let userMessagesRef = FIRDatabase.database().reference().child("user-messages").child(fromId)
             let messageId = childRef.key
             userMessagesRef.updateChildValues([messageId: 1])
@@ -102,7 +102,8 @@ class ChatLogController: UICollectionViewController, UITextFieldDelegate, UIColl
             let recipientMessageRef = FIRDatabase.database().reference().child("user-messages").child(toId)
             recipientMessageRef.updateChildValues([messageId: 1])
         }
-          
+        
+        
     }
 
     func textFieldShouldReturn(_ textField: UITextField) -> Bool {
@@ -118,6 +119,8 @@ class ChatLogController: UICollectionViewController, UITextFieldDelegate, UIColl
         super.viewDidLoad()
         collectionView?.alwaysBounceVertical = true
         collectionView?.backgroundColor = .white
+        collectionView?.contentInset = UIEdgeInsets(top: 8, left: 0, bottom: 58, right: 0)
+        collectionView?.scrollIndicatorInsets = UIEdgeInsets(top: 0, left: 0, bottom: 50, right: 0)
         collectionView?.register(ChatMessageCell.self, forCellWithReuseIdentifier: cellId)
         setupInputFildElements()
     }
@@ -131,11 +134,30 @@ class ChatLogController: UICollectionViewController, UITextFieldDelegate, UIColl
         
         cell.textView.text = messages[indexPath.item].text
         
+        cell.bubbleWidthAnchor?.constant = estimatedFrameForText(text: messages[indexPath.item].text!).width + 32
+        
         return cell
     }
     
+    override func viewWillTransition(to size: CGSize, with coordinator: UIViewControllerTransitionCoordinator) {
+        collectionView?.collectionViewLayout.invalidateLayout()
+    }
+    
     func collectionView(_ collectionView: UICollectionView, layout collectionViewLayout: UICollectionViewLayout, sizeForItemAt indexPath: IndexPath) -> CGSize {
-        return CGSize(width: view.frame.width, height: 80)
+        var height: CGFloat = 80
+        // get estimated heigth somehow
+        if let messageText = messages[indexPath.item].text {
+            height = estimatedFrameForText(text: messageText).height + 20
+
+        }
+        
+        return CGSize(width: view.frame.width, height: height)
+    }
+    
+    private func estimatedFrameForText(text: String) -> CGRect {
+        let size = CGSize(width: 200, height: 1000)
+        let options = NSStringDrawingOptions.usesFontLeading.union(.usesLineFragmentOrigin)
+        return NSString(string: text).boundingRect(with: size, options: options, attributes: [NSFontAttributeName: UIFont.systemFont(ofSize: 16)], context: nil)
     }
     
     func setupInputFildElements() {
