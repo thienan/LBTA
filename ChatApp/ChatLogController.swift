@@ -19,6 +19,7 @@ class ChatLogController: UICollectionViewController, UITextFieldDelegate, UIColl
         }
     }
     
+    var bottomAnchorContainerView: NSLayoutConstraint?
     var messages = [Message]()
     
     func observMessages() {
@@ -122,7 +123,43 @@ class ChatLogController: UICollectionViewController, UITextFieldDelegate, UIColl
         collectionView?.contentInset = UIEdgeInsets(top: 8, left: 0, bottom: 58, right: 0)
         collectionView?.scrollIndicatorInsets = UIEdgeInsets(top: 0, left: 0, bottom: 50, right: 0)
         collectionView?.register(ChatMessageCell.self, forCellWithReuseIdentifier: cellId)
+        
+        collectionView?.keyboardDismissMode = .interactive
+        
         setupInputFildElements()
+        
+        addKeyboardObserver()
+    }
+    
+    override func viewDidDisappear(_ animated: Bool) {
+        NotificationCenter.default.removeObserver(self)
+    }
+    
+    func addKeyboardObserver() {
+        NotificationCenter.default.addObserver(self, selector: #selector(keybordWillShow), name: NSNotification.Name.UIKeyboardWillShow, object: nil)
+        
+        NotificationCenter.default.addObserver(self, selector: #selector(keybordWillHide), name: NSNotification.Name.UIKeyboardWillHide, object: nil)
+    
+    }
+    
+    func keybordWillHide(notification: NSNotification) {
+        let keyboardAnimationDuration = notification.userInfo?[UIKeyboardAnimationDurationUserInfoKey] as? Double
+        
+        bottomAnchorContainerView?.constant = 0
+        UIView.animate(withDuration: keyboardAnimationDuration!) {
+            self.view.layoutIfNeeded()
+        }
+    }
+    
+    func keybordWillShow(notification: NSNotification) {
+        let keybordFrame = (notification.userInfo?[UIKeyboardFrameEndUserInfoKey] as? NSValue)?.cgRectValue
+        let keyboardAnimationDuration = notification.userInfo?[UIKeyboardAnimationDurationUserInfoKey] as? Double
+        
+        bottomAnchorContainerView?.constant = -keybordFrame!.height
+        
+        UIView.animate(withDuration: keyboardAnimationDuration!) {
+            self.view.layoutIfNeeded()
+        }
     }
     
     override func collectionView(_ collectionView: UICollectionView, numberOfItemsInSection section: Int) -> Int {
@@ -179,8 +216,8 @@ class ChatLogController: UICollectionViewController, UITextFieldDelegate, UIColl
             height = estimatedFrameForText(text: messageText).height + 20
 
         }
-        
-        return CGSize(width: view.frame.width, height: height)
+        let width = UIScreen.main.bounds.width
+        return CGSize(width: width, height: height)
     }
     
     private func estimatedFrameForText(text: String) -> CGRect {
@@ -194,7 +231,8 @@ class ChatLogController: UICollectionViewController, UITextFieldDelegate, UIColl
         containerView.backgroundColor = .white
         
         containerView.leftAnchor.constraint(equalTo: view.leftAnchor).isActive = true
-        containerView.bottomAnchor.constraint(equalTo: view.bottomAnchor).isActive = true
+        bottomAnchorContainerView = containerView.bottomAnchor.constraint(equalTo: view.bottomAnchor)
+        bottomAnchorContainerView?.isActive = true
         containerView.heightAnchor.constraint(equalToConstant: 50).isActive = true
         containerView.widthAnchor.constraint(equalTo: view.widthAnchor).isActive = true
         view.layoutSubviews()
