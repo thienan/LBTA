@@ -120,19 +120,60 @@ class ChatLogController: UICollectionViewController, UITextFieldDelegate, UIColl
         super.viewDidLoad()
         collectionView?.alwaysBounceVertical = true
         collectionView?.backgroundColor = .white
-        collectionView?.contentInset = UIEdgeInsets(top: 8, left: 0, bottom: 58, right: 0)
+        collectionView?.contentInset = UIEdgeInsets(top: 8, left: 0, bottom: 8, right: 0)
         collectionView?.scrollIndicatorInsets = UIEdgeInsets(top: 0, left: 0, bottom: 50, right: 0)
         collectionView?.register(ChatMessageCell.self, forCellWithReuseIdentifier: cellId)
         
+        // allows to slide down the keyboard.
         collectionView?.keyboardDismissMode = .interactive
         
-        setupInputFildElements()
-        
-        addKeyboardObserver()
+        //setupInputFildElements()
+        //addKeyboardObserver()
     }
+    
     
     override func viewDidDisappear(_ animated: Bool) {
         NotificationCenter.default.removeObserver(self)
+    }
+    
+    lazy var inputContainerView: UIView = {
+        let containerView = UIView()
+        containerView.frame = CGRect(x: 0, y: 0, width: self.view.frame.width, height: 50)
+        containerView.backgroundColor = .white
+        
+        containerView.addSubview(self.separatorLine)
+        
+        self.separatorLine.leftAnchor.constraint(equalTo: containerView.leftAnchor).isActive = true
+        self.separatorLine.bottomAnchor.constraint(equalTo: containerView.topAnchor).isActive = true
+        self.separatorLine.widthAnchor.constraint(equalTo: containerView.widthAnchor).isActive = true
+        self.separatorLine.heightAnchor.constraint(equalToConstant: 1).isActive = true
+        
+        containerView.addSubview(self.sendButton)
+        self.sendButton.rightAnchor.constraint(equalTo: containerView.rightAnchor, constant: -8).isActive = true
+        self.sendButton.centerYAnchor.constraint(equalTo: containerView.centerYAnchor).isActive = true
+        self.sendButton.heightAnchor.constraint(equalTo: containerView.heightAnchor).isActive = true
+        self.sendButton.widthAnchor.constraint(equalToConstant: 40).isActive = true
+        
+        containerView.addSubview(self.textInputField)
+        self.textInputField.leftAnchor.constraint(equalTo: containerView.leftAnchor, constant: 8).isActive = true
+        self.textInputField.centerYAnchor.constraint(equalTo: containerView.centerYAnchor).isActive = true
+        self.textInputField.heightAnchor.constraint(equalTo: containerView.heightAnchor).isActive = true
+        self.textInputField.rightAnchor.constraint(equalTo: self.sendButton.leftAnchor).isActive = true
+    
+        return containerView
+    }()
+    
+    override var inputAccessoryView: UIView? {
+        get{
+            return inputContainerView
+        }
+    }
+    
+    // make the inputAccessoryView visible
+    override var canBecomeFirstResponder: Bool {
+        get {
+            return true
+        }
     }
     
     func addKeyboardObserver() {
@@ -191,8 +232,8 @@ class ChatLogController: UICollectionViewController, UITextFieldDelegate, UIColl
             cell.textView.textColor = .white
             cell.profileImageView.isHidden = true
             
-            cell.bubbleRightAnchor?.isActive = true
             cell.bubbleLeftAnchor?.isActive = false
+            cell.bubbleRightAnchor?.isActive = true
             
         } else {
             cell.bubleView.backgroundColor = ChatMessageCell.grayColor
@@ -205,6 +246,7 @@ class ChatLogController: UICollectionViewController, UITextFieldDelegate, UIColl
         }
     }
     
+    // portrait and ladscape support.
     override func viewWillTransition(to size: CGSize, with coordinator: UIViewControllerTransitionCoordinator) {
         collectionView?.collectionViewLayout.invalidateLayout()
     }
