@@ -10,6 +10,11 @@ import UIKit
 
 class ChatMessageCell: UICollectionViewCell {
     
+    var chatLogController: ChatLogController?
+    var bubbleWidthAnchor : NSLayoutConstraint?
+    var bubbleRightAnchor : NSLayoutConstraint?
+    var bubbleLeftAnchor : NSLayoutConstraint?
+    
     let textView: UITextView = {
         let textView = UITextView()
         textView.backgroundColor = .clear
@@ -41,18 +46,25 @@ class ChatMessageCell: UICollectionViewCell {
         return view
     }()
     
-    let messageImageView: UIImageView = {
+    lazy var messageImageView: UIImageView = {
         let view = UIImageView()
         view.translatesAutoresizingMaskIntoConstraints = false
         view.layer.cornerRadius = 16
         view.layer.masksToBounds = true
         view.contentMode = .scaleAspectFill
+        view.addGestureRecognizer(UITapGestureRecognizer(target: self, action: #selector(handleMessageImageTapGesture)))
+        view.isUserInteractionEnabled = true
         return view
     }()
     
-    var bubbleWidthAnchor : NSLayoutConstraint?
-    var bubbleRightAnchor : NSLayoutConstraint?
-    var bubbleLeftAnchor : NSLayoutConstraint?
+    
+    func handleMessageImageTapGesture(tapGesture: UITapGestureRecognizer) {
+        if let imageView = tapGesture.view as? UIImageView {
+            self.chatLogController?.performZoomInUiImageView(startingImageView: imageView)
+        }
+    }
+    
+
 
     
     override init(frame: CGRect) {
