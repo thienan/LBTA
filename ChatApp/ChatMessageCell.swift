@@ -12,11 +12,11 @@ class ChatMessageCell: UICollectionViewCell {
     
     let textView: UITextView = {
         let textView = UITextView()
-        textView.text = "TEXT TEXT TEXt"
         textView.backgroundColor = .clear
         textView.textColor = .white
         textView.font = UIFont.systemFont(ofSize: 16)
         textView.translatesAutoresizingMaskIntoConstraints = false
+        textView.isEditable = false
         return textView
     }()
     
