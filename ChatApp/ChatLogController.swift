@@ -316,20 +316,23 @@ class ChatLogController: UICollectionViewController, UITextFieldDelegate, UIColl
             cell.profileImageView.loadImagesUsingCacheWithUrlString(urlString: profileImageUrl)
         }
         
+        if let messageImageUrl = message.imageUrl {
+            cell.messageImageView.loadImagesUsingCacheWithUrlString(urlString: messageImageUrl)
+            cell.messageImageView.isHidden = false
+        } else {
+            cell.messageImageView.isHidden = true
+        }
+        
         if message.fromId == FIRAuth.auth()?.currentUser?.uid {
             cell.bubleView.backgroundColor = ChatMessageCell.blueColor
             cell.textView.textColor = .white
             cell.profileImageView.isHidden = true
-            
             cell.bubbleLeftAnchor?.isActive = false
             cell.bubbleRightAnchor?.isActive = true
-            
         } else {
             cell.bubleView.backgroundColor = ChatMessageCell.grayColor
             cell.textView.textColor = .black
-            
             cell.profileImageView.isHidden = false
-
             cell.bubbleRightAnchor?.isActive = false
             cell.bubbleLeftAnchor?.isActive = true
         }
