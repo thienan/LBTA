@@ -16,6 +16,9 @@ class ChatLogController: UICollectionViewController, UITextFieldDelegate, UIColl
     let cellId = "cellId"
     var bottomAnchorContainerView: NSLayoutConstraint?
     var messages = [Message]()
+    var startingFrame: CGRect?
+    var blackBackgroundView: UIView?
+    var startingImageView: UIImageView?
     var user: User? {
         didSet {
             navigationItem.title = user?.name
@@ -35,45 +38,6 @@ class ChatLogController: UICollectionViewController, UITextFieldDelegate, UIColl
             return true
         }
     }
-    
-    let containerView : UIView = {
-        let view = UIView()
-        view.translatesAutoresizingMaskIntoConstraints = false
-        return view
-    }()
-    
-    let separatorLine: UIView = {
-        let view = UIView()
-        view.translatesAutoresizingMaskIntoConstraints = false
-        view.backgroundColor = UIColor.rgbColor(red: 220, green: 220, blue: 220, alpha: 1)
-        return view
-    }()
-    
-    lazy var textInputField: UITextField = {
-        let view = UITextField()
-        view.placeholder = "Type text message here.."
-        view.translatesAutoresizingMaskIntoConstraints = false
-        view.delegate = self
-        return view
-    }()
-    
-    lazy var sendButton: UIButton = {
-        let button = UIButton(type: .system)
-        button.setImage(UIImage(named: "sent"), for: .normal)
-        button.translatesAutoresizingMaskIntoConstraints = false
-        button.addTarget(self, action: #selector(handleSend), for: .touchUpInside)
-        return button
-    }()
-    
-    lazy var sendImageView: UIImageView = {
-        let image = UIImage(named: "upload_image_icon")
-        let imageView = UIImageView(image: image)
-        imageView.translatesAutoresizingMaskIntoConstraints = false
-        imageView.isUserInteractionEnabled = true
-        let tapGesture = UITapGestureRecognizer.init(target: self, action: #selector(handleSendImage))
-        imageView.addGestureRecognizer(tapGesture)
-        return imageView
-    }()
     
     func observMessages() {
         guard let uid = FIRAuth.auth()?.currentUser?.uid, let toId = user?.id  else {
@@ -226,7 +190,7 @@ class ChatLogController: UICollectionViewController, UITextFieldDelegate, UIColl
     }
 
     func handleSend() {
-        guard let text = textInputField.text , !text.isEmpty else { return }
+        guard let text = inputContainerView.textInputField.text , !text.isEmpty else { return }
         let properties : [String : Any] = ["text": text]
         sendMessageWithProperties(properties: properties)
     }
@@ -247,7 +211,7 @@ class ChatLogController: UICollectionViewController, UITextFieldDelegate, UIColl
                 print(error!)
                 return
             }
-            self.textInputField.text = nil
+            self.inputContainerView.textInputField.text = nil
             let userMessagesRef = FIRDatabase.database().reference().child("user-messages").child(fromId).child(toId)
             userMessagesRef.updateChildValues([messageId: 1])
             
@@ -256,13 +220,7 @@ class ChatLogController: UICollectionViewController, UITextFieldDelegate, UIColl
         }
 
     }
-    
-    func textFieldShouldReturn(_ textField: UITextField) -> Bool {
-        handleSend()
-        textInputField.resignFirstResponder()
-        return true
-    }
-    
+   
     // MARK: - Layout
     
     override func viewDidLoad() {
@@ -297,37 +255,13 @@ class ChatLogController: UICollectionViewController, UITextFieldDelegate, UIColl
         NotificationCenter.default.removeObserver(self)
     }
     
-    lazy var inputContainerView: UIView = {
-        let containerView = UIView()
-        containerView.frame = CGRect(x: 0, y: 0, width: self.view.frame.width, height: 50)
-        containerView.backgroundColor = .white
+    lazy var inputContainerView: ChatInputContainerView = {
         
-        containerView.addSubview(self.separatorLine)
-        
-        self.separatorLine.leftAnchor.constraint(equalTo: containerView.leftAnchor).isActive = true
-        self.separatorLine.bottomAnchor.constraint(equalTo: containerView.topAnchor).isActive = true
-        self.separatorLine.widthAnchor.constraint(equalTo: containerView.widthAnchor).isActive = true
-        self.separatorLine.heightAnchor.constraint(equalToConstant: 1).isActive = true
-        
-        containerView.addSubview(self.sendButton)
-        self.sendButton.rightAnchor.constraint(equalTo: containerView.rightAnchor, constant: -8).isActive = true
-        self.sendButton.centerYAnchor.constraint(equalTo: containerView.centerYAnchor).isActive = true
-        self.sendButton.heightAnchor.constraint(equalTo: containerView.heightAnchor).isActive = true
-        self.sendButton.widthAnchor.constraint(equalToConstant: 40).isActive = true
-        
-        containerView.addSubview(self.sendImageView)
-        self.sendImageView.leftAnchor.constraint(equalTo: containerView.leftAnchor).isActive = true
-        self.sendImageView.centerYAnchor.constraint(equalTo: containerView.centerYAnchor).isActive = true
-        self.sendImageView.widthAnchor.constraint(equalToConstant: 44).isActive = true
-        self.sendImageView.heightAnchor.constraint(equalToConstant: 44).isActive = true
-        
-        containerView.addSubview(self.textInputField)
-        self.textInputField.leftAnchor.constraint(equalTo: self.sendImageView.rightAnchor, constant: 8).isActive = true
-        self.textInputField.centerYAnchor.constraint(equalTo: containerView.centerYAnchor).isActive = true
-        self.textInputField.heightAnchor.constraint(equalTo: containerView.heightAnchor).isActive = true
-        self.textInputField.rightAnchor.constraint(equalTo: self.sendButton.leftAnchor).isActive = true
-    
-        return containerView
+        let frame = CGRect(x: 0, y: 0, width: self.view.frame.width, height: 50)
+        let chatInputContainerView = ChatInputContainerView(frame: frame)
+        chatInputContainerView.chatLogController = self
+        return chatInputContainerView
+
 
     }()
    
@@ -418,9 +352,7 @@ class ChatLogController: UICollectionViewController, UITextFieldDelegate, UIColl
     }
     
     
-    var startingFrame: CGRect?
-    var blackBackgroundView: UIView?
-    var startingImageView: UIImageView?
+
     
     func performZoomInUiImageView (startingImageView: UIImageView) {
         startingFrame = startingImageView.superview?.convert(startingImageView.frame, to: nil)
