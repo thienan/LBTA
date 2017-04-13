@@ -121,10 +121,8 @@ class ChatMessageCell: UICollectionViewCell {
         profileImageView.heightAnchor.constraint(equalToConstant: 32).isActive = true
         
         addSubview(bubleView)
-
         bubbleLeftAnchor = bubleView.leftAnchor.constraint(equalTo: profileImageView.rightAnchor, constant: 8)
         bubbleRightAnchor = bubleView.rightAnchor.constraint(equalTo: self.rightAnchor, constant: -8)
-
         bubleView.topAnchor.constraint(equalTo: self.topAnchor).isActive = true
         bubbleWidthAnchor = bubleView.widthAnchor.constraint(equalToConstant: 200)
         bubbleWidthAnchor?.isActive = true
@@ -150,18 +148,15 @@ class ChatMessageCell: UICollectionViewCell {
         activityIndicatorView.heightAnchor.constraint(equalToConstant: 50).isActive = true
         
         addSubview(textView)
-        
         textView.leftAnchor.constraint(equalTo: bubleView.leftAnchor, constant: 8).isActive = true
         textView.topAnchor.constraint(equalTo: self.topAnchor).isActive = true
         textView.rightAnchor.constraint(equalTo: bubleView.rightAnchor).isActive = true
         textView.heightAnchor.constraint(equalTo: self.heightAnchor).isActive = true
 
-        
     }
     
     required init?(coder aDecoder: NSCoder) {
         fatalError("init(coder:) has not been implemented")
     }
-    
-    
+   
 }

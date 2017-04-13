@@ -26,8 +26,38 @@ class MessageController: UITableViewController {
                                                             action: #selector(handleNewMessage))
         tableView.register(UserCell.self, forCellReuseIdentifier: cellId)
         
+        tableView.allowsMultipleSelectionDuringEditing = true
     }
 
+    override func tableView(_ tableView: UITableView, commit editingStyle: UITableViewCellEditingStyle, forRowAt indexPath: IndexPath) {
+        
+        guard let uid = FIRAuth.auth()?.currentUser?.uid else {
+            return
+        }
+        
+        let message = self.messages[indexPath.row]
+       
+        if let chatPartenrID = message.chatPartnerId() {
+            FIRDatabase.database().reference().child("user-messages").child(uid).child(chatPartenrID).removeValue(completionBlock: { (error, ref) in
+                
+                if error != nil {
+                    print(error!)
+                    return
+                }
+                
+                self.messagesDictionary.removeValue(forKey: chatPartenrID)
+                self.attemptReloadTheTable()
+                
+            })
+            
+//            FIRDatabase.database().reference().child("user-messages").child(chatPartenrID).child(uid).removeValue()
+//            if let messageId = message.messageId {
+//                FIRDatabase.database().reference().child("messages").child(messageId).removeValue()
+//            }
+            
+        }
+    }
+    
     func observUserMessages() {
         
         guard let uid = FIRAuth.auth()?.currentUser?.uid else {
@@ -43,6 +73,13 @@ class MessageController: UITableViewController {
                 let messageId = snapshot.key
                 self.fetchMessageWithMessageId(messageId: messageId)
             }, withCancel: nil)
+        }, withCancel: nil)
+        
+        ref.observe(.childRemoved, with: { (snapshot) in
+            
+            self.messagesDictionary.removeValue(forKey: snapshot.key)
+            self.attemptReloadTheTable()
+            
         }, withCancel: nil)
     }
     

@@ -237,8 +237,9 @@ class ChatLogController: UICollectionViewController, UITextFieldDelegate, UIColl
         let childRef = ref.childByAutoId()
         let fromId = FIRAuth.auth()!.currentUser!.uid
         let timestamp = NSDate().timeIntervalSince1970
+        let messageId = childRef.key
         
-        var values: [String: Any] = ["toId" : toId,"fromId": fromId, "timestamp": timestamp]
+        var values: [String: Any] = ["toId" : toId,"fromId": fromId, "timestamp": timestamp, "messageId" : messageId]
         properties.forEach { values[$0] = $1 }
         
         childRef.updateChildValues(values) { (error, ref) in
@@ -248,7 +249,6 @@ class ChatLogController: UICollectionViewController, UITextFieldDelegate, UIColl
             }
             self.textInputField.text = nil
             let userMessagesRef = FIRDatabase.database().reference().child("user-messages").child(fromId).child(toId)
-            let messageId = childRef.key
             userMessagesRef.updateChildValues([messageId: 1])
             
             let recipientMessageRef = FIRDatabase.database().reference().child("user-messages").child(toId).child(fromId)
