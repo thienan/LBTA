@@ -75,7 +75,6 @@ class ChatLogController: UICollectionViewController, UITextFieldDelegate, UIColl
         return imageView
     }()
     
-    //+
     func observMessages() {
         guard let uid = FIRAuth.auth()?.currentUser?.uid, let toId = user?.id  else {
             return
@@ -343,16 +342,20 @@ class ChatLogController: UICollectionViewController, UITextFieldDelegate, UIColl
         
         let message = messages[indexPath.item]
         cell.textView.text = message.text
+        cell.message = message
+        
         setupCell(cell: cell, message: message)
         
         if let text = message.text {
-        
             cell.bubbleWidthAnchor?.constant = estimatedFrameForText(text: text).width + 32
             cell.textView.isHidden = false
         } else if message.imageUrl != nil {
             cell.bubbleWidthAnchor?.constant = 200
             cell.textView.isHidden = true
         }
+        
+            cell.playButton.isHidden =  message.videoUrl != nil ? false : true
+        
         return cell
     }
     

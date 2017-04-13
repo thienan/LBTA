@@ -7,13 +7,35 @@
 //
 
 import UIKit
+import AVFoundation
 
 class ChatMessageCell: UICollectionViewCell {
     
     var chatLogController: ChatLogController?
+    var message: Message?
     var bubbleWidthAnchor : NSLayoutConstraint?
     var bubbleRightAnchor : NSLayoutConstraint?
     var bubbleLeftAnchor : NSLayoutConstraint?
+    var playerLayer: AVPlayerLayer?
+    var player: AVPlayer?
+    
+    let activityIndicatorView: UIActivityIndicatorView = {
+        let indicator = UIActivityIndicatorView()
+        indicator.translatesAutoresizingMaskIntoConstraints = false
+        indicator.hidesWhenStopped = true
+        return indicator
+    }()
+    
+    lazy var playButton: UIButton = {
+        let button = UIButton(type: .system)
+        button.setImage(UIImage(named: "play"), for: .normal)
+        button.translatesAutoresizingMaskIntoConstraints = false
+        button.tintColor = .white
+        
+        button.addTarget(self, action: #selector(handlePlay), for: .touchUpInside)
+        
+        return button
+    }()
     
     let textView: UITextView = {
         let textView = UITextView()
@@ -57,16 +79,38 @@ class ChatMessageCell: UICollectionViewCell {
         return view
     }()
     
+    func handlePlay() {
+        if let videoUrlString = message?.videoUrl, let url = URL(string: videoUrlString) {
+            player = AVPlayer(url: url)
+            
+            playerLayer = AVPlayerLayer(player: player)
+            playerLayer?.frame = bubleView.bounds
+            bubleView.layer.addSublayer(playerLayer!)
+            
+            player?.play()
+            activityIndicatorView.startAnimating()
+            playButton.isHidden = true
+        }
+    }
+    
+    override func prepareForReuse() {
+        super.prepareForReuse()
+        
+        playerLayer?.removeFromSuperlayer()
+        player?.pause()
+        activityIndicatorView.stopAnimating()
+    }
     
     func handleMessageImageTapGesture(tapGesture: UITapGestureRecognizer) {
+        if message?.videoUrl != nil {
+            return
+        }
+        
         if let imageView = tapGesture.view as? UIImageView {
             self.chatLogController?.performZoomInUiImageView(startingImageView: imageView)
         }
     }
-    
-
-
-    
+   
     override init(frame: CGRect) {
         super.init(frame: frame)
         
@@ -86,11 +130,24 @@ class ChatMessageCell: UICollectionViewCell {
         bubbleWidthAnchor?.isActive = true
         bubleView.heightAnchor.constraint(equalTo: self.heightAnchor).isActive = true
         
+        
         bubleView.addSubview(messageImageView)
         messageImageView.leftAnchor.constraint(equalTo: bubleView.leftAnchor).isActive = true
         messageImageView.topAnchor.constraint(equalTo: bubleView.topAnchor).isActive = true
         messageImageView.widthAnchor.constraint(equalTo: bubleView.widthAnchor).isActive = true
         messageImageView.heightAnchor.constraint(equalTo: bubleView.heightAnchor).isActive = true
+
+        bubleView.addSubview(playButton)
+        playButton.centerXAnchor.constraint(equalTo: bubleView.centerXAnchor).isActive = true
+        playButton.centerYAnchor.constraint(equalTo: bubleView.centerYAnchor).isActive = true
+        playButton.widthAnchor.constraint(equalToConstant: 50).isActive = true
+        playButton.heightAnchor.constraint(equalToConstant: 50).isActive = true
+        
+        bubleView.addSubview(activityIndicatorView)
+        activityIndicatorView.centerXAnchor.constraint(equalTo: bubleView.centerXAnchor).isActive = true
+        activityIndicatorView.centerYAnchor.constraint(equalTo: bubleView.centerYAnchor).isActive = true
+        activityIndicatorView.widthAnchor.constraint(equalToConstant: 50).isActive = true
+        activityIndicatorView.heightAnchor.constraint(equalToConstant: 50).isActive = true
         
         addSubview(textView)
         
