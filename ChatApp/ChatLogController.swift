@@ -8,6 +8,8 @@
 
 import UIKit
 import Firebase
+import MobileCoreServices
+import AVFoundation
 
 class ChatLogController: UICollectionViewController, UITextFieldDelegate, UICollectionViewDelegateFlowLayout, UIImagePickerControllerDelegate, UINavigationControllerDelegate {
     
@@ -73,6 +75,7 @@ class ChatLogController: UICollectionViewController, UITextFieldDelegate, UIColl
         return imageView
     }()
     
+    //+
     func observMessages() {
         guard let uid = FIRAuth.auth()?.currentUser?.uid, let toId = user?.id  else {
             return
@@ -108,6 +111,7 @@ class ChatLogController: UICollectionViewController, UITextFieldDelegate, UIColl
         
         imagePickerController.delegate = self
         imagePickerController.allowsEditing = true
+        imagePickerController.mediaTypes = [kUTTypeMovie as String, kUTTypeImage as String]
         
         present(imagePickerController, animated: true, completion: nil)
         
@@ -115,8 +119,71 @@ class ChatLogController: UICollectionViewController, UITextFieldDelegate, UIColl
     
     func imagePickerController(_ picker: UIImagePickerController, didFinishPickingMediaWithInfo info: [String : Any]) {
         
-        var selectedInageFromPicker: UIImage?
+        if let videoUrl = info[UIImagePickerControllerMediaURL] as? URL {
+            // selected video workflow
+            handleVideoSelectedForUrl(fileUrl: videoUrl)
+        } else {
+            // selected image workflow
+            handleImageSelectedForUrl(info: info)
+        }
         
+        dismiss(animated: true, completion: nil)
+            
+    }
+    
+    private func handleVideoSelectedForUrl (fileUrl: URL) {
+        let fileName = NSUUID().uuidString + ".mov"
+        let uploadTask = FIRStorage.storage().reference().child("message_movies").child(fileName).putFile(fileUrl, metadata: nil, completion: { (metdata, error) in
+            if error != nil {
+                print("File upload failure:", error!)
+                return
+            }
+            if let videoUrl = metdata?.downloadURL()?.absoluteString {
+                
+                guard let thumbnailImage = self.thumbnailImageForVideoUrl (url: fileUrl) else { return }
+                
+                self.uploadToFirebaseUsingSelectedImage(image: thumbnailImage, completion: { (imageUrl) in
+                    let properties: [String: Any] = ["imageUrl": imageUrl,
+                                                     "imageWidth": thumbnailImage.size.width,
+                                                     "imageHeight": thumbnailImage.size.height,
+                                                     "videoUrl": videoUrl]
+                    
+                    self.sendMessageWithProperties(properties: properties)
+                })
+                
+            }
+        })
+        
+        uploadTask.observe(.progress) { (snapshot) in
+            if let completedUnitCount = snapshot.progress?.completedUnitCount {
+                self.navigationItem.title = String(completedUnitCount)
+            }
+        }
+        
+        uploadTask.observe(.success) { (snapshot) in
+            self.navigationItem.title = self.user?.name
+        }
+        
+    }
+    
+    private func thumbnailImageForVideoUrl(url: URL) -> UIImage? {
+        let assert = AVAsset(url: url)
+        let assetGenerator = AVAssetImageGenerator(asset: assert)
+        
+        do {
+            let thumbnailImage = try assetGenerator.copyCGImage(at: CMTimeMake(1, 60), actualTime: nil)
+
+            return UIImage(cgImage: thumbnailImage)
+
+        } catch let err {
+            print(err)
+        }
+        
+        return nil
+    }
+    
+    private func handleImageSelectedForUrl(info: [String: Any]) {
+        var selectedInageFromPicker: UIImage?
         if let editedImage = info["UIImagePickerControllerEditedImage"] as? UIImage {
             selectedInageFromPicker = editedImage
         } else if let originalImage = info["UIImagePickerControllerOriginalImage"] as? UIImage {
@@ -124,19 +191,18 @@ class ChatLogController: UICollectionViewController, UITextFieldDelegate, UIColl
         }
         
         if let selectedImage = selectedInageFromPicker {
-            uploadToFirebaseUsingSelectedImage(image: selectedImage)
-            
+            uploadToFirebaseUsingSelectedImage(image: selectedImage, completion: {
+                (imageUrl) in
+                self.sendMessageWithImageUrl(imageUrl: imageUrl, image: selectedImage)
+            })
         }
-        
-        dismiss(animated: true, completion: nil)
     }
     
     func imagePickerControllerDidCancel(_ picker: UIImagePickerController) {
         dismiss(animated: true, completion: nil)
-        
     }
     
-    private func uploadToFirebaseUsingSelectedImage(image: UIImage) {
+    private func uploadToFirebaseUsingSelectedImage(image: UIImage, completion: @escaping (_ imageUrl: String) -> ()) {
         let imageName = NSUUID().uuidString
         let ref = FIRStorage.storage().reference().child("message_images").child(imageName)
         
@@ -147,11 +213,10 @@ class ChatLogController: UICollectionViewController, UITextFieldDelegate, UIColl
                     return
                 }
                 if let imageUrl = metdata?.downloadURL()?.absoluteString {
-                    self.sendMessageWithImageUrl(imageUrl: imageUrl, image: image)
+                    completion(imageUrl)
                 }
             })
         }
-    
     }
 
     private func sendMessageWithImageUrl (imageUrl: String, image: UIImage) {
@@ -223,8 +288,6 @@ class ChatLogController: UICollectionViewController, UITextFieldDelegate, UIColl
     
     func handleKeyboardDidShow() {
         if messages.count > 0 {
-            print("^@%^%!&^%$!&^@%$^&!@%$^&@!%^$&!@^$")
-            print(messages.count)
             let indexPath = IndexPath(item: messages.count - 1, section: 0)
             collectionView?.scrollToItem(at: indexPath, at: .top, animated: true)
         }
@@ -283,7 +346,7 @@ class ChatLogController: UICollectionViewController, UITextFieldDelegate, UIColl
         setupCell(cell: cell, message: message)
         
         if let text = message.text {
-            
+        
             cell.bubbleWidthAnchor?.constant = estimatedFrameForText(text: text).width + 32
             cell.textView.isHidden = false
         } else if message.imageUrl != nil {
@@ -299,13 +362,7 @@ class ChatLogController: UICollectionViewController, UITextFieldDelegate, UIColl
             cell.profileImageView.loadImagesUsingCacheWithUrlString(urlString: profileImageUrl)
         }
         
-        if let messageImageUrl = message.imageUrl {
-            cell.messageImageView.loadImagesUsingCacheWithUrlString(urlString: messageImageUrl)
-            cell.messageImageView.isHidden = false
-        } else {
-            cell.messageImageView.isHidden = true
-        }
-        
+
         if message.fromId == FIRAuth.auth()?.currentUser?.uid {
             cell.bubleView.backgroundColor = ChatMessageCell.blueColor
             cell.textView.textColor = .white
@@ -319,6 +376,15 @@ class ChatLogController: UICollectionViewController, UITextFieldDelegate, UIColl
             cell.bubbleRightAnchor?.isActive = false
             cell.bubbleLeftAnchor?.isActive = true
         }
+        
+        if let messageImageUrl = message.imageUrl {
+            cell.bubleView.backgroundColor = .clear
+            cell.messageImageView.loadImagesUsingCacheWithUrlString(urlString: messageImageUrl)
+            cell.messageImageView.isHidden = false
+        } else {
+            cell.messageImageView.isHidden = true
+        }
+        
     }
     
     // portrait and ladscape support.
@@ -372,7 +438,8 @@ class ChatLogController: UICollectionViewController, UITextFieldDelegate, UIColl
             keyWindow.addSubview(blackBackgroundView!)
             keyWindow.addSubview(zoomingImageView)
 
-            UIView.animate(withDuration: 0.5, delay: 0, usingSpringWithDamping: 1, initialSpringVelocity: 1, options: .curveEaseOut, animations: {                 self.blackBackgroundView?.alpha = 1
+            UIView.animate(withDuration: 0.5, delay: 0, usingSpringWithDamping: 1, initialSpringVelocity: 1, options: .curveEaseOut, animations: {
+                self.blackBackgroundView?.alpha = 1
                 self.inputContainerView.alpha = 0
                 let height = self.startingFrame!.height / self.startingFrame!.width * keyWindow.frame.width
                 zoomingImageView.frame = CGRect(x: 0, y: 0, width: keyWindow.frame.width, height: height)
