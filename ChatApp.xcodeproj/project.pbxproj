@@ -8,6 +8,7 @@
 
 /* Begin PBXBuildFile section */
 		192DAA9D4403139599A7C703 /* Pods_ChatApp.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = B41674D2B796057085DEA0B4 /* Pods_ChatApp.framework */; };
+		DBE0EACB1EA08BED008B2479 /* ChatInputContainerView.swift in Sources */ = {isa = PBXBuildFile; fileRef = DBE0EACA1EA08BED008B2479 /* ChatInputContainerView.swift */; };
 		E623C2881E90E8D600E238A7 /* ChatLogController.swift in Sources */ = {isa = PBXBuildFile; fileRef = E623C2871E90E8D600E238A7 /* ChatLogController.swift */; };
 		E623C28B1E91970E00E238A7 /* UserCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = E623C28A1E91970E00E238A7 /* UserCell.swift */; };
 		E623C28D1E919ACC00E238A7 /* Message.swift in Sources */ = {isa = PBXBuildFile; fileRef = E623C28C1E919ACC00E238A7 /* Message.swift */; };
@@ -29,6 +30,7 @@
 /* Begin PBXFileReference section */
 		B41674D2B796057085DEA0B4 /* Pods_ChatApp.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; includeInIndex = 0; path = Pods_ChatApp.framework; sourceTree = BUILT_PRODUCTS_DIR; };
 		D68C1161A29C080C7CF4385C /* Pods-ChatApp.debug.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-ChatApp.debug.xcconfig"; path = "Pods/Target Support Files/Pods-ChatApp/Pods-ChatApp.debug.xcconfig"; sourceTree = "<group>"; };
+		DBE0EACA1EA08BED008B2479 /* ChatInputContainerView.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = ChatInputContainerView.swift; sourceTree = "<group>"; };
 		E623C2871E90E8D600E238A7 /* ChatLogController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = ChatLogController.swift; sourceTree = "<group>"; };
 		E623C28A1E91970E00E238A7 /* UserCell.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = UserCell.swift; sourceTree = "<group>"; };
 		E623C28C1E919ACC00E238A7 /* Message.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = Message.swift; sourceTree = "<group>"; };
@@ -76,6 +78,7 @@
 			children = (
 				E623C28A1E91970E00E238A7 /* UserCell.swift */,
 				E63713091E9267F7005A745A /* ChatMessageCell.swift */,
+				DBE0EACA1EA08BED008B2479 /* ChatInputContainerView.swift */,
 			);
 			name = View;
 			sourceTree = "<group>";
@@ -295,6 +298,7 @@
 				E6B295771E8E8FD400DF16C0 /* Extentions.swift in Sources */,
 				E66EB7241E86AC12009D0223 /* ChatApp.xcdatamodeld in Sources */,
 				E637130A1E9267F7005A745A /* ChatMessageCell.swift in Sources */,
+				DBE0EACB1EA08BED008B2479 /* ChatInputContainerView.swift in Sources */,
 				E66EB71E1E86AC12009D0223 /* MessageController.swift in Sources */,
 				E66EB71C1E86AC12009D0223 /* AppDelegate.swift in Sources */,
 			);

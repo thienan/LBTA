@@ -19,6 +19,7 @@ class ChatInputContainerView : UIView, UITextFieldDelegate {
         }
     }
     
+    
     let separatorLine: UIView = {
         let view = UIView()
         view.translatesAutoresizingMaskIntoConstraints = false
