@@ -7,6 +7,7 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
+		DBD1D2B91FE29CF20072C88D /* UIColor+LBTA.m in Sources */ = {isa = PBXBuildFile; fileRef = DBD1D2B81FE29CF20072C88D /* UIColor+LBTA.m */; };
 		E6D6B3B31FDFEFB600E4A803 /* AppDelegate.m in Sources */ = {isa = PBXBuildFile; fileRef = E6D6B3B21FDFEFB600E4A803 /* AppDelegate.m */; };
 		E6D6B3B61FDFEFB600E4A803 /* ViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = E6D6B3B51FDFEFB600E4A803 /* ViewController.m */; };
 		E6D6B3B91FDFEFB600E4A803 /* Main.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = E6D6B3B71FDFEFB600E4A803 /* Main.storyboard */; };
@@ -16,6 +17,8 @@
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
+		DBD1D2B71FE29CF20072C88D /* UIColor+LBTA.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; name = "UIColor+LBTA.h"; path = "CircularLoaderLBTA/UIColor+LBTA.h"; sourceTree = "<group>"; };
+		DBD1D2B81FE29CF20072C88D /* UIColor+LBTA.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; name = "UIColor+LBTA.m"; path = "CircularLoaderLBTA/UIColor+LBTA.m"; sourceTree = "<group>"; };
 		E6D6B3AE1FDFEFB600E4A803 /* CircularLoaderLBTA.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = CircularLoaderLBTA.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		E6D6B3B11FDFEFB600E4A803 /* AppDelegate.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = AppDelegate.h; sourceTree = "<group>"; };
 		E6D6B3B21FDFEFB600E4A803 /* AppDelegate.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = AppDelegate.m; sourceTree = "<group>"; };
@@ -42,6 +45,8 @@
 		E6D6B3A51FDFEFB600E4A803 = {
 			isa = PBXGroup;
 			children = (
+				DBD1D2B71FE29CF20072C88D /* UIColor+LBTA.h */,
+				DBD1D2B81FE29CF20072C88D /* UIColor+LBTA.m */,
 				E6D6B3B01FDFEFB600E4A803 /* CircularLoaderLBTA */,
 				E6D6B3AF1FDFEFB600E4A803 /* Products */,
 			);
@@ -142,6 +147,7 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				DBD1D2B91FE29CF20072C88D /* UIColor+LBTA.m in Sources */,
 				E6D6B3B61FDFEFB600E4A803 /* ViewController.m in Sources */,
 				E6D6B3C11FDFEFB600E4A803 /* main.m in Sources */,
 				E6D6B3B31FDFEFB600E4A803 /* AppDelegate.m in Sources */,
